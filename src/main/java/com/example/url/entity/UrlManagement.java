@@ -1,25 +1,26 @@
 package com.example.url.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+//import org.springframework.data.redis.core.RedisHash;
+
+import java.io.Serializable;
+import java.util.Date;
 
 
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
+@AllArgsConstructor
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Document(collection = "URL_MANAGEMENT")
-public class UrlManagement {
+@Document(collection = "UrlManagement")
+//@RedisHash("UrlManagement")
+public class UrlManagement implements Serializable {
 
     @Id
-    public String id;
-    private String tinyUrl;
-    private String longUrl;
-    private String key;
+    private String id;
+    private String url;
+    private Date created;
+    private Date expire;
 }
