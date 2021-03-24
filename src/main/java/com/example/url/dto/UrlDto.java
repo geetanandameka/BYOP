@@ -3,11 +3,7 @@ package com.example.url.dto;
 import com.google.common.hash.Hashing;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-//import org.springframework.data.redis.core.RedisHash;
-
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -25,7 +21,6 @@ public class UrlDto {
 
     public static UrlDto create(final String url) {
         final String id = Hashing.murmur3_32().hashString(url, StandardCharsets.UTF_8).toString();
-//        final String id = encode(Long.parseLong(half_id));
         return new UrlDto(id, url, new Date(), new Date());
     }
 

@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-//import org.springframework.data.redis.core.RedisHash;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -15,7 +13,6 @@ import java.util.Date;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Document(collection = "UrlManagement")
-//@RedisHash("UrlManagement")
 public class UrlManagement implements Serializable {
 
     @Id

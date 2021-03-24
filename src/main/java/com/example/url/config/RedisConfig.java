@@ -1,6 +1,5 @@
 package com.example.url.config;
 
-import com.example.url.dto.UrlDto;
 import com.example.url.entity.UrlManagement;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
@@ -37,25 +35,10 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-//    @Bean
-//    JedisConnectionFactory jedisConnectionFactory() {
-//        JedisConnectionFactory jedisConFactory
-//                = new JedisConnectionFactory();
-//        jedisConFactory.setHostName("localhost");
-//        jedisConFactory.setPort(6379);
-//        return jedisConFactory;
-//    }
-//
-//    @Bean
-//    public RedisTemplate<String, Object> redisTemplate() {
-//        RedisTemplate<String, Object> template = new RedisTemplate<>();
-//        template.setConnectionFactory(jedisConnectionFactory());
-//        return template;
-//    }
-//    @Bean
-//    public LettuceConnectionFactory redisConnectionFactory() {
-//
-//        return new LettuceConnectionFactory(new RedisStandaloneConfiguration("server", 6379));
-//    }
+    @Bean
+    public LettuceConnectionFactory redisConnectionFactory() {
+
+        return new LettuceConnectionFactory(new RedisStandaloneConfiguration("localhost", 6379));
+    }
 
 }
