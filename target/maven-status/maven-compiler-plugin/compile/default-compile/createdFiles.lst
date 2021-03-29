@@ -6,8 +6,10 @@ com/example/url/config/CachingConfig.class
 com/example/url/repository/UrlManagementRepository.class
 com/example/url/exception/UrlException.class
 com/example/url/dto/ResponseBean$ResponseBeanBuilder.class
+com/example/url/repository/impl/UrlRedisRepoImpl.class
 com/example/url/exception/UrlExceptionHandler.class
 com/example/url/dto/UrlDto.class
+com/example/url/repository/UrlRedisRepo.class
 com/example/url/config/SwaggerConfiguration.class
 com/example/url/service/impl/UrlServiceImpl.class
 com/example/url/dto/ResponseBean.class

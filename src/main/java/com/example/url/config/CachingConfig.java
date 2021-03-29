@@ -13,11 +13,11 @@ import java.util.Arrays;
 //@EnableCaching
 public class CachingConfig {
 
-    @Bean
-    public CacheManager cacheManager() {
-        SimpleCacheManager cacheManager = new SimpleCacheManager();
-        cacheManager.setCaches(Arrays.asList(
-                new ConcurrentMapCache("UrlManagement")));
-        return cacheManager;
-    }
+//    @Bean
+//    public CacheManager cacheManager() {
+//        SimpleCacheManager cacheManager = new SimpleCacheManager();
+//        cacheManager.setCaches(Arrays.asList(
+//                new ConcurrentMapCache("UrlManagement")));
+//        return cacheManager;
+//    }
 }

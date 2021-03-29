@@ -1,11 +1,10 @@
 package com.example.url.service.impl;
 
-import com.example.url.controller.UrlManagementController;
-import com.example.url.dto.ResponseBean;
 import com.example.url.dto.UrlDto;
 import com.example.url.entity.UrlManagement;
 import com.example.url.exception.UrlException;
 import com.example.url.repository.UrlManagementRepository;
+import com.example.url.repository.UrlRedisRepo;
 import com.example.url.service.UrlService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,11 +13,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -30,39 +27,43 @@ public class UrlServiceImpl implements UrlService {
     UrlManagementRepository repo;
 
     @Autowired
-    private RedisTemplate<String, UrlManagement> redisTemplate;
+    private UrlRedisRepo urlRedisRepo;
 
     private ObjectMapper mapper = new ObjectMapper();
 
     @Value("${redis.ttl}")
     private long ttl;
 
+    @Value("${app.base.url}")
+    private String appBaseUrl;
+
+    public UrlServiceImpl(UrlRedisRepo urlRedisRepo) {
+        this.urlRedisRepo = urlRedisRepo;
+    }
+
     @Override
     public String createUrl(String url) throws JsonProcessingException {
+        String shortUrl;
         // Using commons-validator library to validate the input URL.
-        UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"});
-        if (!urlValidator.isValid(url)) {
-            LOGGER.info("Invalid URL.");
-           throw new UrlException("Invalid URL.", null);
-        }
+//        UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"});
+//        if (!urlValidator.isValid(url)) {
+//            LOGGER.info("Invalid URL.");
+//            throw new UrlException("Invalid URL.", null);
+//        }
         LOGGER.info("valid URL.");
         // If valid URL, generate a hash key using guava's murmur3 hashing algorithm.
         UrlDto urlDto = UrlDto.create(url);
-
-        String json = mapper.writeValueAsString(urlDto);
-
-        UrlManagement urlManagement = mapper.readValue(json, UrlManagement.class);
-        LOGGER.info("URL id generated = {}", urlDto.getId());
-
-        String shortUrl = "http://localhost:9080/url/{" + urlManagement.getId() + "}";
-
-        final UrlManagement redis_urlManagement = redisTemplate.opsForValue().get(urlManagement.getId());
-        if (!Objects.isNull(redis_urlManagement)) {
-         return shortUrl;
-
+        UrlDto RedisObj = urlRedisRepo.findById(urlDto.getId());
+        shortUrl = appBaseUrl + urlDto.getId();
+        if (null != RedisObj) {
+            return shortUrl;
         } else {
+            String json = mapper.writeValueAsString(urlDto);
+
+            UrlManagement urlManagement = mapper.readValue(json, UrlManagement.class);
+            LOGGER.info("URL id generated = {}", urlDto.getId());
             repo.save(urlManagement);
-            redisTemplate.opsForValue().set(urlManagement.getId(), urlManagement, ttl);
+            urlRedisRepo.save(urlDto);
             LOGGER.info("URL Management = {}", mapper.writeValueAsString(urlManagement));
             return shortUrl;
         }
@@ -72,17 +73,17 @@ public class UrlServiceImpl implements UrlService {
     public String getOriginalUrl(String id) {
         String originalUrl = null;
         // Get from redis.
-        final UrlManagement redis_urlManagement = redisTemplate.opsForValue().get(id);
-        if (!Objects.isNull(redis_urlManagement)) {
-            originalUrl = redis_urlManagement.getUrl();
+        UrlDto RedisObj = urlRedisRepo.findById(id);
+        if (null != RedisObj) {
+            return appBaseUrl + RedisObj.getId();
+        }
+        final Optional<UrlManagement> urlDto = repo.findById(id);
+        if (!urlDto.isPresent() || urlDto.isEmpty()) {
+
         } else {
-            final Optional<UrlManagement> urlDto = repo.findById(id);
-            if (!urlDto.isPresent() || urlDto.isEmpty()) {
-                return originalUrl;
-            } else {
-                LOGGER.info("URL retrieved = {}", urlDto.get().getUrl());
-                originalUrl= urlDto.get().getUrl();
-            }
+            LOGGER.info("URL retrieved = {}", urlDto.get().getUrl());
+            originalUrl = urlDto.get().getUrl();
+//            }
         }
 
         return originalUrl;

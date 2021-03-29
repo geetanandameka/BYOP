@@ -15,8 +15,8 @@ import java.util.Map;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice
 public class UrlExceptionHandler {
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(UrlException.class)
     public Map<String, String> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -27,4 +27,5 @@ public class UrlExceptionHandler {
         });
         return errors;
     }
+
 }
