@@ -33,79 +33,30 @@ http://localhost:9080/url/1165814f
 * If a short link is created that was once deleted, it will have no "knowledge" of its previous version
 
 ### Capacity Estimation
-Our system will be read-heavy. There will be lots of redirection requests compared to new URL shortenings. Let’s assume a 100:1 ratio between read and write.
-```
-Give examples
-```
+This system will be read-heavy. There will be lots of redirection requests compared to new URL shortenings. Let’s assume a 100:1 ratio between read and write.
 
-### Installing
+### System APIs
 
-A step by step series of examples that tell you how to get a development env running
+We have REST APIs to expose the functionality of the service.
 
-Say what the step will be
+create url(url)
+getAllCreatedUrls()
+getUrl(id)
+#### Parameters:
+url (string): Original URL to be shortened.
+id (String) : short URL.
 
-```
-Give the example
-```
+### Database Design
+A few observations about the nature of the data we will store:
+* We need to store billions of records.
+* Each object we store is small (less than 1K).
+* There are no relationships between records—other than storing which user created a URL.
+* Our service is read-heavy. 
+  
+What kind of database should we use? Since we anticipate storing billions of rows, and we don’t need to use relationships between objects – a NoSQL store is a better choice
 
-And repeat
+### Algorithm
 
-```
-until finished
-```
+The problem we are solving here is how to generate a short and unique key for a given URL.
 
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
-
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+the shortened URL is “http://localhost:9080/url/1165814f”. The last eight characters of this URL is the short key we want to generate
